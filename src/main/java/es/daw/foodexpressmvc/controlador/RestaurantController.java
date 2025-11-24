@@ -6,26 +6,59 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/restaurants")
 public class RestaurantController {
-
-    // Pendiente inyectar servicio
 
     private final RestaurantService restaurantService;
 
-    @GetMapping("/restaurants")
+    @GetMapping
     public String listRestaurants(Model model) {
 
-        // pendiente obtener del servicio los restaurantes
-        List<RestaurantDTO> restaurants = new ArrayList<>();
-
+        List<RestaurantDTO> restaurants = restaurantService.getRestaurants();
         model.addAttribute("restaurants",restaurants);
-        return "restaurants";
+        return "restaurants/restaurants";
     }
+
+    @GetMapping("/menu")
+    public String restaurantMenu(Model model, Principal principal) {
+        String username = principal.getName();
+
+        model.addAttribute("usename", username);
+
+        return "restaurants/restaurants-menu";
+    }
+
+    @GetMapping("/create")
+    public String showCreateForm(Model model, Principal principal) {
+        String username = principal.getName();
+        model.addAttribute("usename", username);
+        model.addAttribute("restaurant", new RestaurantDTO());
+        return "restaurants/restaurant-create";
+    }
+
+    @PostMapping("/create")
+    public String saveRestaurant(@ModelAttribute("restaurant") RestaurantDTO restaurantDTO,
+                                 Principal principal,
+                                 Model model) {
+
+        RestaurantDTO saved = restaurantService.createRestaurant(restaurantDTO);
+        // Pendiente!! pasar el restaurante y mostrarlo... se ha creado bien el resta....
+        // Pendiente: añadir la cabecera (username)...
+
+        return "restaurants/create-success";
+
+    }
+
+
 }

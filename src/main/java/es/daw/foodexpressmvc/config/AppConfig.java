@@ -23,4 +23,11 @@ public class AppConfig {
                 .build();
 
     }
+
+    @Bean
+    public WebClient webClientAuth(WebClient.Builder builder) {
+        return builder
+                .baseUrl(authUrl)
+                .build();
+    }
 }

@@ -5,10 +5,7 @@ import es.daw.foodexpressmvc.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -51,6 +48,8 @@ public class RestaurantController {
                                  Principal principal,
                                  Model model) {
 
+        System.out.println("******restaurantDTO:"+restaurantDTO);
+
         RestaurantDTO saved = restaurantService.createRestaurant(restaurantDTO);
         // Pendiente!! pasar el restaurante y mostrarlo... se ha creado bien el resta....
         // Pendiente: añadir la cabecera (username)...
@@ -58,6 +57,15 @@ public class RestaurantController {
         return "restaurants/create-success";
 
     }
+
+    @PostMapping("/delete/{id}")
+    public String deleteRestaurant(@PathVariable("id") Long id) {
+
+        return "";
+
+    }
+
+
 
 
 }

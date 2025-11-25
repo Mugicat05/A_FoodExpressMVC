@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -26,21 +25,28 @@ public class RestaurantController {
         return "restaurants/restaurants";
     }
 
-    @GetMapping("/menu")
-    public String restaurantMenu(Model model, Principal principal) {
-        String username = principal.getName();
+//    @GetMapping("/menu")
+//    public String restaurantMenu(Model model, Principal principal) {
+//        String username = principal.getName();
+//
+//        model.addAttribute("usename", username);
+//
+//        return "restaurants/restaurants-menu";
+//    }
 
-        model.addAttribute("usename", username);
+//    @GetMapping("/menu")
+//    public String restaurantMenu(Model model) {
+//        return "restaurants/restaurants-menu";
+//    }
 
-        return "restaurants/restaurants-menu";
-    }
 
     @GetMapping("/create")
     public String showCreateForm(Model model, Principal principal) {
         String username = principal.getName();
         model.addAttribute("usename", username);
         model.addAttribute("restaurant", new RestaurantDTO());
-        return "restaurants/restaurant-create";
+        model.addAttribute("mode","create");
+        return "restaurants/restaurant-form";
     }
 
     @PostMapping("/create")
@@ -54,17 +60,25 @@ public class RestaurantController {
         // Pendiente!! pasar el restaurante y mostrarlo... se ha creado bien el resta....
         // Pendiente: añadir la cabecera (username)...
 
+
         return "restaurants/create-success";
 
     }
 
     @PostMapping("/delete/{id}")
     public String deleteRestaurant(@PathVariable("id") Long id) {
-
-        return "";
+        restaurantService.delete(id);
+        return "redirect:/restaurants"; //llamar al endpoint
 
     }
 
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("mode","update");
+        model.addAttribute("restaurant", restaurantService.getRestaurantById(id));
+        return "restaurants/restaurant-form";
+
+    }
 
 
 

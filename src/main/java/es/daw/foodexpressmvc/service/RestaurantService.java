@@ -74,8 +74,11 @@ public class RestaurantService {
         return dto;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void delete(Long id) {
-
 
         String token = apiAuthService.getToken();
 
@@ -92,5 +95,21 @@ public class RestaurantService {
             throw new ConnectApiRestException(e.getMessage());
         }
 
+    }
+
+    public RestaurantDTO getRestaurantById(Long id) {
+        // Forma 1: llamar al endpoing para obtener Restaurant por id
+        // tendría mi weblcliente.....
+
+
+        // Forma 2:
+        return getRestaurants().stream()
+                .filter(restaurant -> restaurant.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() - new RuntimeException("No existe el restaurante " + id));
+    }
+
+    public void updateRestaurant(Long id, RestaurantDTO restaurantDTO) {
+        //
     }
 }

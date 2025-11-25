@@ -14,7 +14,13 @@ import java.util.List;
 public class RestaurantService {
 
     private final WebClient webClientAPI;
+    private final ApiAuthService  apiAuthService;
 
+
+    /**
+     * Es público
+     * @return
+     */
     public List<RestaurantDTO> getRestaurants() {
 
         RestaurantDTO[] restaurants;
@@ -37,20 +43,24 @@ public class RestaurantService {
     }
 
     /**
-     *
+     * Necesita jwt
      * @param restaurantDTO
      * @return
      */
     public RestaurantDTO createRestaurant(RestaurantDTO restaurantDTO) {
-        // PENDIENTE CREAR ENVIANDO EL TOKEN!!!!!
+
+        System.out.println("********createRestaurant.........");
         RestaurantDTO dto;
 
-        // Pendiente usar el servicio de Auth para obtener el token...
+        String token = apiAuthService.getToken();
+
+        System.out.println("*** Token: " + token);
+
         try {
             dto = webClientAPI
                     .post()
                     .uri("/restaurants")
-                    //.header()
+                    .header("Authorization", "Bearer " + token)
                     .bodyValue(restaurantDTO)
                     .retrieve()
                     .bodyToMono(RestaurantDTO.class)
@@ -62,5 +72,25 @@ public class RestaurantService {
 
         // Pendiente usar Optional!!!
         return dto;
+    }
+
+    public void delete(Long id) {
+
+
+        String token = apiAuthService.getToken();
+
+        try {
+            webClientAPI
+                    .delete()
+                    .uri("/restaurants/{id}",id)
+                    .header("Authorization", "Bearer " + token)
+                    .retrieve()
+                    .bodyToMono(Void.class)
+                    .block(); // Bloquea y espera. Síncrono
+        }catch (Exception e){
+            //throw new ConnectApiRestException("Could not connect to FoodExpres API");
+            throw new ConnectApiRestException(e.getMessage());
+        }
+
     }
 }

@@ -34,7 +34,18 @@
         <div class="mb-3">
             <label class="form-label">Phone</label>
             <input th:field="*{phone}" class="form-control">
+
+            <!-- MOSTRAR MENSAJE DE ERRORRRRR -->
+            <div class="text-danger"
+            th:if="${#fields.hasErrors('phone')}"
+            th:errors="*{phone}"></div>
+
         </div>
+
+
+
+        <!--<input type="hidden" th:if="${mode == 'update'}" name="id" th:value="${id}" >-->
+        <input type="hidden" th:if="${mode == 'update'}" th:field="*{id}" >
 
         <button class="btn btn-primary" th:text="${mode == 'create'}?'Create':'Update'"></button>
         <a th:href="@{/dashboard}" class="btn btn-secondary ms-2">Cancel</a>

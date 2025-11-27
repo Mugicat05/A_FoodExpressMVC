@@ -106,10 +106,25 @@ public class RestaurantService {
         return getRestaurants().stream()
                 .filter(restaurant -> restaurant.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() - new RuntimeException("No existe el restaurante " + id));
+                .orElseThrow(() -> new RuntimeException("No existe el restaurante " + id));
     }
 
     public void updateRestaurant(Long id, RestaurantDTO restaurantDTO) {
-        //
+        RestaurantDTO dto;
+        String token = apiAuthService.getToken();
+        try {
+            dto = webClientAPI
+                    .put()
+                    .uri("/restaurants/{id}",id)
+                    .header("Authorization", "Bearer " + token)
+                    .bodyValue(restaurantDTO)
+                    .retrieve()
+                    .bodyToMono(RestaurantDTO.class)
+                    .block(); // Bloquea y espera. Síncrono
+        }catch (Exception e){
+            //throw new ConnectApiRestException("Could not connect to FoodExpres API");
+            throw new ConnectApiRestException(e.getMessage());
+        }
+
     }
 }

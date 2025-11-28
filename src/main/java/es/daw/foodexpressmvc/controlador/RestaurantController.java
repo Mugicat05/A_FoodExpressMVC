@@ -2,9 +2,11 @@ package es.daw.foodexpressmvc.controlador;
 
 import es.daw.foodexpressmvc.dto.RestaurantDTO;
 import es.daw.foodexpressmvc.service.RestaurantService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -51,18 +53,22 @@ public class RestaurantController {
     }
 
     @PostMapping("/create")
+    //public String saveRestaurant(@Valid @ModelAttribute("restaurant") RestaurantDTO restaurantDTO,
     public String saveRestaurant(@ModelAttribute("restaurant") RestaurantDTO restaurantDTO,
                                  Principal principal,
                                  Model model) {
 
         System.out.println("******restaurantDTO:"+restaurantDTO);
 
-        RestaurantDTO saved = restaurantService.createRestaurant(restaurantDTO);
-        // Pendiente!! pasar el restaurante y mostrarlo... se ha creado bien el resta....
-        // Pendiente: añadir la cabecera (username)...
-
-
-        return "restaurants/create-success";
+        try {
+            RestaurantDTO saved = restaurantService.createRestaurant(restaurantDTO);
+            // Pendiente!! pasar el restaurante y mostrarlo... se ha creado bien el resta....
+            // Pendiente: añadir la cabecera (username)...
+            return "restaurants/create-success";
+        }catch (Exception e){
+            model.addAttribute("errorMessage",e.getMessage());
+            return "restaurants/restaurant-form";
+        }
 
     }
 
@@ -78,6 +84,27 @@ public class RestaurantController {
         model.addAttribute("mode","update");
         model.addAttribute("restaurant", restaurantService.getRestaurantById(id));
         return "restaurants/restaurant-form";
+
+    }
+
+    // CAUSA DE POR QUÉ NO SE VEÍA EL MENSAJE DE ERROR DEL TELÉFONO EN EL CAMPO DEL FORMULARIO:
+    // Thymeleaf espera que en el modelo haya un atributo exactamente llamado restaurant, y sobre ese atributo aplicará los errores de validación.
+    @PostMapping("/update/{id}")
+    public String update(@PathVariable Long id,
+                         //@Valid @ModelAttribute RestaurantDTO dto,
+                         @Valid @ModelAttribute("restaurant") RestaurantDTO restaurantDTO,
+                         BindingResult bindingResult,
+                         Model model){
+
+        if (bindingResult.hasErrors()){
+            model.addAttribute("mode","update");
+            //model.addAttribute("restaurant", dto);
+            return "restaurants/restaurant-form";
+        }
+
+        //restaurantService.updateRestaurant(id, dto);
+        restaurantService.updateRestaurant(id, restaurantDTO);
+        return "redirect:/restaurants"; //endpoint
 
     }
 
